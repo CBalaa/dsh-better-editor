@@ -1,0 +1,6 @@
+# node-pty (a transitive dep of dsh-better-sidebar, unused here) ships prebuilt
+# binaries via its install script; pnpm 10+ blocks dependency build scripts
+# unless approved. protobufjs (a dsh-* transitive) needs its codegen step.
+allowBuilds:
+  node-pty: true
+  protobufjs: true

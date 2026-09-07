@@ -1,0 +1,115 @@
+/* ── Monaco edit window (portalled to document.body) ────────────────────
+   Fixed overlay above the DSH overlay stack (1000+), centered fixed-size
+   dialog (90vw × 85vh): header (path + save/close), truncation banner, the
+   monaco host, and a status bar. Token-driven (--dsw-alias-* / --dsw-font-*). */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dsw-alias-bg-mask-1);
+  backdrop-filter: blur(2px);
+}
+
+.window {
+  width: 90vw;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--dsw-alias-bg-layer-1);
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  background: var(--dsw-alias-bg-layer-2);
+  flex-shrink: 0;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: var(--dsw-font-xxs-strong-12);
+  color: var(--dsw-alias-label-primary);
+}
+
+.dirtyDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dsw-alias-state-warn-primary);
+  flex-shrink: 0;
+}
+
+.headerButton {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.headerButton:hover:not(:disabled) {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.headerButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.status {
+  font: var(--dsw-font-xxs-12);
+  color: var(--dsw-alias-label-secondary);
+  flex-shrink: 0;
+}
+
+.statusError {
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.banner {
+  padding: 6px 12px;
+  font: var(--dsw-font-xxs-12);
+  color: var(--dsw-alias-state-warn-label);
+  background: var(--dsw-alias-state-warn-tertiary);
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  flex-shrink: 0;
+}
+
+.editor {
+  flex: 1;
+  min-height: 0;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 12px;
+  border-top: 1px solid var(--dsw-alias-border-l1);
+  background: var(--dsw-alias-bg-layer-2);
+  font: var(--dsw-font-xxs-12);
+  color: var(--dsw-alias-label-secondary);
+  flex-shrink: 0;
+}

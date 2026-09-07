@@ -1,0 +1,20 @@
+# dsh-better-editor bundle patch
+#
+# The `dsh.bundle.patch` layer of the published package. Installed through the
+# official CLI —
+#
+#   dsh plugin --profile <name> add dsh-better-editor@<version>
+#
+# — the command reconciles `dsh.profile.bundles` against installed packages
+# and, seeing this declaration, appends `dsh-better-editor` to the bundle
+# stack. The profile boot then merges THIS patch (a single `insert` of the
+# plugin row) exactly like a manual cordis.patch.yml mount line.
+#
+# The plugin DEPENDS on dsh-better-sidebar: its client half injects the
+# `betterSidebar` service and only registers its file viewer through it. The
+# sidebar row must therefore precede this one in `dsh.profile.bundles` — the
+# standard install order (dsh plugin add appends new bundles last, and the
+# sidebar was added first).
+- insert:
+    - id: better-editor
+      name: 'dsh-better-editor'

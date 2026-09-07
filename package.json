@@ -1,0 +1,87 @@
+{
+  "name": "dsh-better-editor",
+  "version": "0.1.0",
+  "description": "DSH web plugin: a VSCode-grade file editor for dsh-better-sidebar. Registers a read-only, syntax-highlighted viewer plus a Monaco (vscode.dev engine) edit window through ctx.betterSidebar.registerFileViewer, keeping monaco and its language workers out of the sidebar bundle.",
+  "type": "module",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "dsh-plugin"
+  ],
+  "main": "./lib/index.js",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/client-editor.js",
+    "lib/monaco-worker-editor.js",
+    "lib/monaco-worker-typescript.js",
+    "lib/monaco-worker-json.js",
+    "lib/monaco-worker-css.js",
+    "lib/monaco-worker-html.js",
+    "lib/types/**/*.d.ts",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('lib',{recursive:true,force:true})\" && tsc -p tsconfig.build.json && tsdown",
+    "typecheck": "tsc --noEmit",
+    "bundle": "tsdown",
+    "test": "vitest run",
+    "watch": "tsdown --watch"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "dsh-better-sidebar": "^0.18.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "dsh-better-sidebar": {
+      "optional": false
+    }
+  },
+  "dependencies": {
+    "monaco-editor": "^0.56.0"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@types/node": "^24.0.0",
+    "@types/react": "~18.3.1",
+    "@types/react-dom": "~18.3.1",
+    "dsh-better-sidebar": "0.18.0",
+    "react": "^18.2.0",
+    "react-dom": "18.2.0",
+    "tsdown": "^0.22.2",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.8",
+    "lightningcss": "^1.32.0"
+  }
+}
