@@ -1,50 +1,232 @@
 /* ── Monaco edit window (portalled to document.body) ────────────────────
-   Fixed overlay above the DSH overlay stack (1000+), centered fixed-size
-   dialog (90vw × 85vh): header (path + save/close), truncation banner, the
-   monaco host, and a status bar. Token-driven (--dsw-alias-* / --dsw-font-*). */
+   A resizable, VSCode-shaped workspace dialog: a tab strip, an optional
+   file-explorer pane (left) with a draggable divider, the monaco host, and a
+   status bar. The window itself is dragged by its tab strip and resized by
+   edge/corner handles. Token-driven (--dsw-alias-* / --dsw-font-*). */
 
 .overlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: var(--dsw-alias-bg-mask-1);
   backdrop-filter: blur(2px);
 }
 
 .window {
-  width: 90vw;
-  height: 85vh;
+  position: absolute;
   display: flex;
   flex-direction: column;
   background: var(--dsw-alias-bg-layer-1);
   border: 1px solid var(--dsw-alias-border-l1);
   border-radius: 12px;
+  box-shadow: var(--dsw-shadow-lv3);
   overflow: hidden;
 }
 
-.header {
+/* Resize handles (edge + corner). Positioned inside the border so the
+   window can keep overflow:hidden for its rounded corners. */
+.rsz {
+  position: absolute;
+  z-index: 30;
+  touch-action: none;
+}
+.rszN { top: 0; left: 14px; right: 14px; height: 5px; cursor: ns-resize; }
+.rszS { bottom: 0; left: 14px; right: 14px; height: 5px; cursor: ns-resize; }
+.rszE { right: 0; top: 14px; bottom: 14px; width: 5px; cursor: ew-resize; }
+.rszW { left: 0; top: 14px; bottom: 14px; width: 5px; cursor: ew-resize; }
+.rszNE { top: 0; right: 0; width: 14px; height: 14px; cursor: nesw-resize; }
+.rszNW { top: 0; left: 0; width: 14px; height: 14px; cursor: nwse-resize; }
+.rszSE { bottom: 0; right: 0; width: 14px; height: 14px; cursor: nwse-resize; }
+.rszSW { bottom: 0; left: 0; width: 14px; height: 14px; cursor: nesw-resize; }
+
+/* ── Tab strip ─────────────────────────────────────────────────────────── */
+.tabbar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  gap: 4px;
+  padding: 6px 8px 0;
   background: var(--dsw-alias-bg-layer-2);
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 190px;
+  min-width: 0;
+  height: 30px;
+  padding: 0 6px 0 10px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  cursor: pointer;
+  font: var(--dsw-font-xxs-12);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tab:hover { background: var(--dsw-alias-interactive-bg-hover); }
+.tabActive {
+  background: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-primary);
+  border-color: var(--dsw-alias-border-l2);
+}
+
+.tabTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.tabClose {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  cursor: pointer;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tabClose:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }
+
+.tabbarActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding-bottom: 4px;
+}
+
+/* ── Body (explorer + divider + editor) ────────────────────────────────── */
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.explorer {
+  width: 240px;
+  flex-shrink: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--dsw-alias-bg-layer-1);
+  border-right: 1px solid var(--dsw-alias-border-l1);
+}
+
+.explorerHeader {
+  padding: 8px 12px;
+  font: var(--dsw-font-xxs-strong-12);
+  color: var(--dsw-alias-label-secondary);
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.tree {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 0;
+}
+
+.treeRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding-right: 8px;
+  cursor: pointer;
+  color: var(--dsw-alias-label-secondary);
+  font: var(--dsw-font-xxs-12);
+  white-space: nowrap;
+  user-select: none;
+}
+.treeRow:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }
+.treeRowActive { background: var(--dsw-alias-interactive-bg-active); color: var(--dsw-alias-label-primary); }
+
+.treeChevron {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--dsw-alias-label-tertiary);
+  transition: transform 0.12s;
+}
+.treeChevronOpen { transform: rotate(90deg); }
+
+.treeIcon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.treeName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.treeEmpty,
+.treeError {
+  padding: 12px;
+  font: var(--dsw-font-xxs-12);
+}
+.treeEmpty { color: var(--dsw-alias-label-tertiary); }
+.treeError { color: var(--dsw-alias-state-error-primary); }
+
+.divider {
+  width: 5px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  touch-action: none;
+  background: transparent;
+}
+.divider:hover { background: var(--dsw-alias-border-l2); }
+
+.editorArea {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.notice {
+  padding: 4px 12px;
+  font: var(--dsw-font-xxs-12);
+  color: var(--dsw-alias-state-error-primary);
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
   flex-shrink: 0;
 }
 
-.title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font: var(--dsw-font-xxs-strong-12);
-  color: var(--dsw-alias-label-primary);
-}
-
+/* ── Shared chrome (tab bar buttons, status, banners, editor) ──────────── */
 .dirtyDot {
   width: 8px;
   height: 8px;
@@ -75,6 +257,11 @@
 .headerButton:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+.headerButtonActive {
+  background: var(--dsw-alias-interactive-bg-active);
+  color: var(--dsw-alias-label-primary);
 }
 
 .status {

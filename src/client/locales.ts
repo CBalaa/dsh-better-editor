@@ -18,6 +18,7 @@ export const zh = {
   closeUnsavedConfirm: '有未保存的修改，确定关闭吗？',
   truncation: '文件过大，仅显示前 512KB，暂不支持编辑',
   position: '行 {line}，列 {column}',
+  explorer: '资源管理器',
 } as const
 
 export const en: Record<keyof typeof zh, string> = {
@@ -33,6 +34,7 @@ export const en: Record<keyof typeof zh, string> = {
   closeUnsavedConfirm: 'Discard unsaved changes and close?',
   truncation: 'File too large — showing the first 512KB; editing is unavailable',
   position: 'Ln {line}, Col {column}',
+  explorer: 'Explorer',
 }
 
 export const ja: Record<keyof typeof zh, string> = {
@@ -48,6 +50,7 @@ export const ja: Record<keyof typeof zh, string> = {
   closeUnsavedConfirm: '未保存の変更があります。閉じますか？',
   truncation: 'ファイルが大きすぎます — 最初の 512KB のみ表示、編集は利用できません',
   position: '行 {line}、列 {column}',
+  explorer: 'エクスプローラー',
 }
 
 export type CopyKey = keyof typeof zh
