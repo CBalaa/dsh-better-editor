@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      monaco-editor:
-        specifier: ^0.56.0
-        version: 0.56.0
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: ^4.0.2
@@ -30,6 +26,9 @@ importers:
       lightningcss:
         specifier: ^1.32.0
         version: 1.33.0
+      monaco-editor:
+        specifier: ^0.56.0
+        version: 0.56.0
       react:
         specifier: ^18.2.0
         version: 18.3.1

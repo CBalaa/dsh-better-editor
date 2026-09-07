@@ -7,7 +7,7 @@
 ## 功能
 
 - **只读视图**：所有文本文件（代码/配置等）默认以只读 Monaco 打开，语法高亮、折叠、括号对着色、缩进参考线，且**不占用页面首屏加载**（Monaco 按需懒加载，首次打开文件才下载）。
-- **编辑窗口**：只读视图顶部「编辑」按钮 → 弹出 90vw×85vh 的编辑窗口，完整 VSCode 编辑体验：
+- **编辑窗口**：只读视图顶部「编辑」按钮 → 弹出一个可缩放、可拖动的 VSCode 式工作台（**左侧文件浏览器 + 顶部文件标签页**），完整 VSCode 编辑体验：
   - 多光标（Alt+Click / Ctrl+D）、查找替换（Ctrl+F/H）、移动行/注释/折叠、minimap、sticky scroll、F1 命令面板；
   - **TS/JS 完整语言服务**（诊断/补全/hover）、JSON 校验、CSS 颜色块、HTML 补全（语言 worker 按需加载）；
   - Ctrl/Cmd+S 保存（写回 `/sidebar/api/fs.write`），保存后就地刷新只读视图；
@@ -16,11 +16,21 @@
 
 ## 安装
 
+已发布到 npm，直接用 DSH 自带的 CLI 安装：
+
 ```bash
-dsh plugin --profile <profile> add dsh-better-editor@<version>
+# 1) 先装依赖的侧边栏（本插件通过它的 betterSidebar 服务注册查看器）
+dsh plugin --profile <profile> add dsh-better-sidebar
+
+# 2) 再装本插件（也可固定版本：dsh-better-editor@0.1.0）
+dsh plugin --profile <profile> add dsh-better-editor
 ```
 
-> 确保 `dsh-better-sidebar` 先装（`dsh plugin add` 追加到 bundle 栈尾，先装的侧边栏自然在前，加载顺序正确）。
+`dsh plugin add` 会把参数转发给 profile 目录里的 pnpm，并把声明了 `dsh.bundle` 的包追加到 `dsh.profile.bundles` 栈尾。因此**先装侧边栏、后装本插件**，加载顺序自然正确（本插件的客户端注入 `betterSidebar` 服务，必须排在侧边栏之后）。
+
+装完**重启 profile**（`dsh --profile <profile>` 重新启动）即可生效。
+
+> 前置：`dsh-better-sidebar@^0.18.0`。`react` / `react-dom` / `@deepseek-ai/cordis` 由 DSH web 运行时提供，无需单独安装。
 
 ## 原理
 
