@@ -20,15 +20,15 @@
 
 ```bash
 # 1) 先装依赖的侧边栏（本插件通过它的 betterSidebar 服务注册查看器）
-dsh plugin --profile <profile> add dsh-better-sidebar
+dsh plugin --profile web add dsh-better-sidebar
 
 # 2) 再装本插件（也可固定版本：dsh-better-editor@0.1.0）
-dsh plugin --profile <profile> add dsh-better-editor
+dsh plugin --profile web add dsh-better-editor
 ```
 
 `dsh plugin add` 会把参数转发给 profile 目录里的 pnpm，并把声明了 `dsh.bundle` 的包追加到 `dsh.profile.bundles` 栈尾。因此**先装侧边栏、后装本插件**，加载顺序自然正确（本插件的客户端注入 `betterSidebar` 服务，必须排在侧边栏之后）。
 
-装完**重启 profile**（`dsh --profile <profile>` 重新启动）即可生效。
+装完**重启 web profile**（`dsh --profile web` 重新启动，或简写 `dsh web`）即可生效。
 
 > 前置：`dsh-better-sidebar@^0.18.0`。`react` / `react-dom` / `@deepseek-ai/cordis` 由 DSH web 运行时提供，无需单独安装。
 
